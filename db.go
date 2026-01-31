@@ -10,10 +10,19 @@ import (
 var db *sqlx.DB
 
 func initDB() {
-  var err error
-  dsn := "postgres://erp_user:erp_password@localhost:5432/erp_asset?sslmode=disable"
-  db, err = sqlx.Connect("postgres", dsn)
-  if err != nil {
-    log.Fatalln("DB connection error:", err)
-  }
+	var err error
+
+	dsn := `
+		host=localhost
+		port=5432
+		user=erp_user
+		password=erp123
+		dbname=erp_asset
+		sslmode=disable
+	`
+
+	db, err = sqlx.Connect("postgres", dsn)
+	if err != nil {
+		log.Fatalln("DB connection error:", err)
+	}
 }
