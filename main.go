@@ -4,12 +4,27 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+  "github.com/joho/godotenv"
 
 	"github.com/google/uuid"
 )
 
+const (
+	EventCreated uint8 = 0
+	EventUpdated uint8 = 1
+	EventDeleted uint8 = 2
+)
+
+
 func main() {
+
+  err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
   initDB()
+  initBlockchain()
 
   http.HandleFunc("/assets", assetHandler)
   http.HandleFunc("/assets/", assetByIDHandler)
@@ -56,6 +71,10 @@ func createAsset(w http.ResponseWriter, r *http.Request) {
     http.Error(w, err.Error(), 500)
     return
   }
+  err = sendAssetEvent(EventCreated, asset)
+  if err != nil {
+	log.Println("⚠️ Blockchain error:", err)
+}
 
   json.NewEncoder(w).Encode(asset)
 }
